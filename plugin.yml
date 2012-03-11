@@ -1,0 +1,20 @@
+name: YetiSquat
+main: me.squatingyeti.YetiSquat.YetiSquat
+version: 0.5
+description: >
+             YetiSquat
+commands:
+  squat: 
+    description: hides a yeti from other players
+    usage: /squat
+  stand:
+    description: reveal your true yeti to other players
+    usage: /stand
+    
+permissions:
+  yetisquat.squat:
+    description: Allows a player to squat
+    default: op
+  yetisquat.see:
+    description: Allows a player to see anyone that is squatting
+    default: op
