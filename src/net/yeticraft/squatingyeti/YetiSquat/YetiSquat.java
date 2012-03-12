@@ -1,4 +1,4 @@
-package me.squatingyeti.YetiSquat;
+package net.yeticraft.squatingyeti.YetiSquat;
 
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.command.Command;
