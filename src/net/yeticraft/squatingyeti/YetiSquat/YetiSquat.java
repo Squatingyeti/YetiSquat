@@ -26,8 +26,6 @@ public class YetiSquat extends JavaPlugin implements Listener {
 	boolean hasPermission(Player player, String perm) {
         return player.isOp() || player.hasPermission(perm);
 }
-	// Needs permissions implementation. Also probably a way to stop a squatting player from picking shit up.
-	// maybe a configuration, but I've never done one yet.
 	
 	//completely stole this part because I needed it
     Set<String> squatting = new HashSet<String>();
@@ -51,7 +49,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
             squat(player);
             return true;
         }
-        // Finished reading wiki...wipe and get back to normal activities    
+        // Finished reading Atlas Shrugged...wipe and get back to normal activities    
 		else if(label.equalsIgnoreCase("stand")) { 
 		  if (!hasPermission(player, "yetisquat.squat")) {
     			player.sendMessage(ChatColor.BLUE + "[YetiSquat] " + ChatColor.YELLOW + "You lack the proper form for correct toilet punishment");
@@ -73,7 +71,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
             updateSquatState(player);
         }
         
-        // Get the pluginmanager to register our events (still not sure about the new way, but this, this is right?)
+        // Get the pluginmanager to register our events
         getServer().getPluginManager().registerEvents(this, this);
         log.info("YetiSquat Enabled");
     }
