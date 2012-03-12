@@ -1,7 +1,7 @@
 .DS_Store
 .project
 .classpath
-*.class
+/.class
 *.jar
 /libraries
 /bin
