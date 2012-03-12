@@ -6,7 +6,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.Server;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Entity;
 import org.bukkit.ChatColor;
@@ -16,7 +15,7 @@ import org.bukkit.event.entity.EntityTargetEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.entity.EntityInteractEvent;
+import org.bukkit.entity.ExperienceOrb;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.logging.Logger;
@@ -87,22 +86,13 @@ public class YetiSquat extends JavaPlugin implements Listener {
         //stand(pl);
         
     }
-    // trying to figure out how to cancel ExpOrb pickup
-    /*
-    @EventHandler(priority = EventPriority.LOW)
-    void onExperienceOrbInteract(EntityInteractEvent event) {
-    	EntityType type = event.getEntityType();
-    	if (type.equals("EXPERIENCE_ORB") || type.equals("XPOrb")) event.setCancelled(true);
-    	return;
-    }
-    */
     
     // don't let squatting players make things look like they appear from nowhere...deny drops
     @EventHandler(priority = EventPriority.LOW)
     void onItemDrop(PlayerDropItemEvent event) {
     if (event.isCancelled() ) return;
     Player player = event.getPlayer();
-    if (!squatting.contains(player.getName())) return;
+    if (!squatting.contains(player.getName().toLowerCase())) return;
     event.setCancelled(true);
     }
     
@@ -111,21 +101,28 @@ public class YetiSquat extends JavaPlugin implements Listener {
     void onItemPickUp(PlayerPickupItemEvent event) {
     if (event.isCancelled() ) return;
     Player player = event.getPlayer();
-    if (!squatting.contains(player.getName())) return;
+    if (!squatting.contains(player.getName().toLowerCase())) return;
     event.setCancelled(true);
     }
     
-    // stop creepers from getting their creep on while we're getting OUR creep on.
-    // set the priorities on both eventhandlers to low. Don't know if that's right
+    /* stop creepers from getting their creep on while we're getting OUR creep on.
+     set the priorities on both eventhandlers to low. Don't know if that's right
+     Attempting to stop experience orbs from assaulting you while squatting
+     */
     @EventHandler(priority = EventPriority.LOW)
     void onEntityTarget(EntityTargetEvent event) {
         if (event.isCancelled() ) 
         	return;
         Entity target = event.getTarget();
+        Entity entity = event.getEntity();
         if (!(target instanceof Player)) 
         	return;
         String playerName = ((Player) target).getName();
-        if (squatting.contains(playerName)) event.setTarget(null);
+        if (squatting.contains(playerName.toLowerCase())) 
+        	event.setTarget(null);
+        	if (entity instanceof ExperienceOrb) {
+        		entity.setVelocity(null);
+        	}
     }
     
     // stops entity damage, including fire
@@ -137,7 +134,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
         if (!(entity instanceof Player)) 
         	return;
         String playerName = ((Player) entity).getName();
-        if (!squatting.contains(playerName)) 
+        if (!squatting.contains(playerName.toLowerCase())) 
         	return;
         event.setCancelled(true);
         if (entity.getFireTicks()>0) entity.setFireTicks(0);
@@ -145,7 +142,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
     
     // our squat method...make sure other players cannot see us
     public void squat(Player player) {
-        squatting.add(player.getName());
+        squatting.add(player.getName().toLowerCase());
         for (Player other : getServer().getOnlinePlayers()) {
             if (!other.equals(player) && other.canSee(player) && !hasPermission(other, "yetisquat.see")) {
             	other.hidePlayer(player);
@@ -157,7 +154,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
     
     // our stand method...make sure other players can see us again
     public void stand(Player player) {
-        squatting.remove(player.getName());
+        squatting.remove(player.getName().toLowerCase());
         for (Player other : getServer().getOnlinePlayers()) {
             if (!other.equals(player) && !other.canSee(player)) {
             	other.showPlayer(player);
@@ -170,7 +167,7 @@ public class YetiSquat extends JavaPlugin implements Listener {
     public void updateSquatState(Player player){
         String playerName = player.getName();
         Server server = getServer();
-        if (squatting.contains(playerName)) squat(player);
+        if (squatting.contains(playerName.toLowerCase())) squat(player);
         else{
             for (Player looking : server.getOnlinePlayers()){
                 if (!looking.canSee(player)) looking.showPlayer(player);
